@@ -23,7 +23,7 @@ function Model() {
     <primitive 
       ref={modelRef}
       object={clonedScene} 
-      scale={1}
+      scale={10}  // INCREASED FROM 1 TO 10
       position={[0, 0, 0]}
     />
   )
@@ -41,7 +41,7 @@ function Scene({ onRotationChange }) {
 
   return (
     <>
-      <PerspectiveCamera makeDefault position={[0, 50, 80]} fov={50} />
+      <PerspectiveCamera makeDefault position={[0, 30, 50]} fov={60} />
       
       {/* Lighting */}
       <ambientLight intensity={0.6} />
@@ -72,8 +72,8 @@ function Scene({ onRotationChange }) {
         enablePan={true}
         enableZoom={true}
         enableRotate={true}
-        minDistance={30}
-        maxDistance={150}
+        minDistance={10}  // CHANGED FROM 30 TO 10 - can zoom in closer
+        maxDistance={200}  // CHANGED FROM 150 TO 200 - can zoom out more
         maxPolarAngle={Math.PI / 2}
         target={[0, 0, 0]}
       />

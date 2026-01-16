@@ -3,7 +3,7 @@
 import { Suspense, useState, useRef } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls, useGLTF, PerspectiveCamera, Environment } from '@react-three/drei'
-import Compass from './Compass'
+import GameMap from './GameMap'
 
 function Model() {
   const modelRef = useRef()
@@ -23,18 +23,18 @@ function Model() {
     <primitive 
       ref={modelRef}
       object={clonedScene} 
-      scale={10}  // INCREASED FROM 1 TO 10
+      scale={10}
       position={[0, 0, 0]}
     />
   )
 }
 
-function Scene({ onRotationChange }) {
+function Scene({ onRotationChange, targetLocation }) {
   const controlsRef = useRef()
 
   useFrame(() => {
     if (controlsRef.current) {
-      // Pass the azimuthal angle (horizontal rotation) to the compass
+      // Pass the azimuthal angle (horizontal rotation) to the map
       onRotationChange(controlsRef.current.getAzimuthalAngle())
     }
   })
@@ -72,8 +72,8 @@ function Scene({ onRotationChange }) {
         enablePan={true}
         enableZoom={true}
         enableRotate={true}
-        minDistance={10}  // CHANGED FROM 30 TO 10 - can zoom in closer
-        maxDistance={200}  // CHANGED FROM 150 TO 200 - can zoom out more
+        minDistance={10}
+        maxDistance={200}
         maxPolarAngle={Math.PI / 2}
         target={[0, 0, 0]}
       />
@@ -83,6 +83,13 @@ function Scene({ onRotationChange }) {
 
 export default function GameBoard3D() {
   const [rotation, setRotation] = useState(0)
+  const [selectedLocation, setSelectedLocation] = useState(null)
+
+  const handleLocationClick = (zoneId, zoneData) => {
+    setSelectedLocation({ id: zoneId, data: zoneData })
+    console.log('Location selected:', zoneId, zoneData)
+    // Here you could add camera animations to move to specific locations
+  }
 
   return (
     <>
@@ -117,8 +124,8 @@ export default function GameBoard3D() {
         }} />
       </div>
 
-      {/* Compass */}
-      <Compass rotation={rotation} />
+      {/* Game Map (replaces Compass) */}
+      <GameMap rotation={rotation} onLocationClick={handleLocationClick} />
 
       {/* Controls hint */}
       <div style={{
@@ -177,7 +184,10 @@ export default function GameBoard3D() {
           alpha: true
         }}
       >
-        <Scene onRotationChange={setRotation} />
+        <Scene 
+          onRotationChange={setRotation} 
+          targetLocation={selectedLocation}
+        />
       </Canvas>
 
       <style jsx>{`
